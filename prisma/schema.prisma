@@ -1,0 +1,268 @@
+// React JS Rwanda — Prisma v7 schema.
+// Generator outputs to lib/generated/prisma (NOT app/ — see master_prompt.md).
+// No url in datasource block — it lives in prisma.config.ts via env("DATABASE_URL").
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Enums
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum Role {
+  GUEST
+  MEMBER
+  ADMIN
+}
+
+enum Availability {
+  OPEN_TO_WORK
+  OPEN_TO_PROJECT
+  MENTORING
+  NOT_LOOKING
+}
+
+enum EventType {
+  MEETUP
+  WORKSHOP
+  NETWORKING
+  CONFERENCE
+}
+
+enum PublicationCategory {
+  INFRASTRUCTURE
+  STATE_MANAGEMENT
+  PERFORMANCE
+  TESTING
+  REACT_NATIVE
+  ECOSYSTEM
+  OPTIMIZATION
+}
+
+enum PublicationType {
+  GUIDE
+  ARTICLE
+  CASE_STUDY
+}
+
+enum PublicationStatus {
+  PENDING
+  PUBLISHED
+  REJECTED
+}
+
+enum ForumCategory {
+  GENERAL
+  ANNOUNCEMENTS
+  TECHNICAL_HELP
+  SHOWCASE
+  CAREER
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Models
+// ─────────────────────────────────────────────────────────────────────────────
+
+model User {
+  id                 String       @id @default(cuid())
+  name               String
+  // Nullable until the user completes /register/profile. Unique once set.
+  username           String?      @unique
+  email              String       @unique
+  emailVerified      Boolean      @default(false)
+  image              String?
+  bio                String?
+  role               Role         @default(MEMBER)
+  title              String?
+  stack              String[]
+  availability       Availability @default(NOT_LOOKING)
+  githubUrl          String?
+  twitterUrl         String?
+  linkedinUrl        String?
+  contributionPoints Int          @default(0)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  // Better Auth relations
+  accounts      Account[]
+  sessions      Session[]
+
+  // Domain relations
+  events             Event[]             @relation("EventAuthor")
+  eventRegistrations EventRegistration[]
+  publications       Publication[]
+  bookmarks          Bookmark[]
+  forumPosts         ForumPost[]
+  forumReplies       ForumReply[]
+
+  @@index([role])
+  @@index([availability])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Better Auth models — required by `better-auth` for sessions, OAuth providers,
+// and email verification / password reset.
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([token])
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+}
+
+model Event {
+  id          String    @id @default(cuid())
+  title       String
+  slug        String    @unique
+  description String
+  date        DateTime
+  startTime   String
+  endTime     String
+  location    String
+  type        EventType
+  coverImage  String?
+  isUpcoming  Boolean   @default(true)
+  authorId    String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  author        User                @relation("EventAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  registrations EventRegistration[]
+
+  @@index([isUpcoming, date])
+  @@index([type])
+}
+
+model EventRegistration {
+  id        String   @id @default(cuid())
+  eventId   String
+  userId    String
+  createdAt DateTime @default(now())
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  @@index([userId])
+}
+
+model Publication {
+  id         String              @id @default(cuid())
+  title      String
+  slug       String              @unique
+  summary    String
+  content    String
+  category   PublicationCategory
+  type       PublicationType
+  readTime   Int
+  coverImage String?
+  status     PublicationStatus   @default(PENDING)
+  authorId   String
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+
+  author    User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  bookmarks Bookmark[]
+
+  @@index([status, createdAt])
+  @@index([category])
+}
+
+model Bookmark {
+  id            String   @id @default(cuid())
+  userId        String
+  publicationId String
+  createdAt     DateTime @default(now())
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  publication Publication @relation(fields: [publicationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, publicationId])
+  @@index([userId])
+}
+
+model ForumPost {
+  id        String        @id @default(cuid())
+  title     String
+  slug      String        @unique
+  body      String
+  category  ForumCategory
+  tags      String[]
+  authorId  String
+  viewCount Int           @default(0)
+  isPinned  Boolean       @default(false)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  author  User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  replies ForumReply[]
+
+  @@index([category, createdAt])
+  @@index([isPinned])
+}
+
+model ForumReply {
+  id        String   @id @default(cuid())
+  body      String
+  postId    String
+  authorId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post   ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+}
+
+model NewsletterSubscriber {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  subscribedAt DateTime @default(now())
+}
