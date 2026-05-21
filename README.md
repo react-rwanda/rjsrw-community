@@ -6,6 +6,73 @@ The official open-source platform for Rwanda's React developer community. Events
 
 ---
 
+## Architecture
+
+```mermaid
+flowchart TB
+    subgraph Browser["🌐 Browser"]
+        UI["React 19 UI<br/>(Server + Client Components)"]
+    end
+
+    subgraph Edge["⚡ Vercel Edge"]
+        Proxy["proxy.ts<br/>session-cookie gate<br/>/dashboard · /profile · /forum/new · /library/submit"]
+    end
+
+    subgraph App["▲ Next.js 16 (App Router)"]
+        direction TB
+        PublicRoutes["(public)/<br/>landing · events · members<br/>library · forum"]
+        AuthRoutes["(auth)/<br/>login · register<br/>register/profile"]
+        DashRoutes["dashboard/<br/>ADMIN-gated<br/>overview · events · members<br/>publications · forum"]
+        API["api/<br/>auth · admin · feed · events<br/>members · library · forum · upload"]
+    end
+
+    subgraph Lib["📦 lib/"]
+        AuthLib["auth.ts<br/>Better Auth config"]
+        DbLib["db.ts<br/>Prisma 7 + adapter-pg"]
+        CacheLib["cache.ts<br/>getCachedOrFetch<br/>invalidateTag"]
+        Guard["auth-guard.ts<br/>requireSession · requireRole"]
+    end
+
+    subgraph External["☁️ External services"]
+        Neon[("Neon Postgres<br/>User · Event · Publication<br/>ForumPost · Bookmark<br/>Session · Account")]
+        Redis[("Upstash Redis<br/>API-layer cache<br/>tag-based invalidation")]
+        OAuth["GitHub OAuth<br/>Google OAuth"]
+        R2["Cloudflare R2<br/>(Phase 3 — avatars,<br/>cover images)"]
+        Resend["Resend<br/>(Phase 4 — welcome,<br/>event confirmations,<br/>newsletter)"]
+    end
+
+    Browser -->|HTTPS| Proxy
+    Proxy --> App
+    PublicRoutes --> API
+    AuthRoutes --> API
+    DashRoutes --> API
+    API --> Guard
+    Guard --> AuthLib
+    API --> CacheLib
+    API --> DbLib
+    AuthLib --> DbLib
+    AuthLib --> OAuth
+    DbLib --> Neon
+    CacheLib --> Redis
+    API -.Phase 3.-> R2
+    API -.Phase 4.-> Resend
+
+    classDef external fill:#f8f8f8,stroke:#737373,color:#0a0a0a
+    classDef app fill:#fff,stroke:#1DB8C3,stroke-width:2px,color:#0a0a0a
+    classDef edge fill:#111,stroke:#1DB8C3,color:#fff
+    class Neon,Redis,OAuth,R2,Resend external
+    class PublicRoutes,AuthRoutes,DashRoutes,API,AuthLib,DbLib,CacheLib,Guard app
+    class Proxy edge
+```
+
+**How a request flows:**
+
+1. Browser hits any URL → **Vercel Edge** runs `proxy.ts`, which checks for a valid Better Auth session cookie on gated routes.
+2. Request reaches the **Next.js App Router**: public pages render with React Server Components fetching directly from Prisma; client pages use React Query against `/api/*` routes.
+3. **API routes** call `requireSession()` / `requireRole()` for defense-in-depth (the edge proxy is fast but the role check needs a DB lookup).
+4. Hot reads (lists, stats, feeds) go through `getCachedOrFetch()` → **Upstash Redis** (60s–5min TTL). Mutations call `invalidateTag()` to bust the relevant cache.
+5. Auth flows use **Better Auth** with the Prisma adapter — sessions, accounts, and verification tokens live in Neon alongside the domain data.
+
 ## Stack
 
 - **Next.js 16** (App Router, no `src/`)
