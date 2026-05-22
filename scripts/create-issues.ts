@@ -24,6 +24,9 @@ import { join } from "node:path";
 
 const REPO = process.env.GH_REPO ?? detectRepo();
 const APPLY = process.argv.includes("--apply");
+// Auto-assign issues marked `completed: true` to this user (the founding
+// contributor who shipped Phase 1). Override with COMPLETED_ASSIGNEE.
+const COMPLETED_ASSIGNEE = process.env.COMPLETED_ASSIGNEE ?? "MUKE-coder";
 
 function detectRepo(): string {
   try {
@@ -2481,13 +2484,20 @@ function ensureIssues() {
     if (found) {
       console.log(`  ✓ exists: #${found.number} ${issue.title}`);
       skipped++;
-      // If marked completed but still open, close it.
-      if (issue.completed && found.state === "OPEN" && APPLY) {
-        sh(
-          `gh issue close ${found.number} --repo ${REPO} --comment "Already shipped in the initial foundation commit. Closing as part of the issue catalog seed."`,
-        );
-        closed++;
-        console.log(`    ↳ closed #${found.number}`);
+      // If marked completed: ensure assignee is set and the issue is closed.
+      if (issue.completed && APPLY) {
+        if (COMPLETED_ASSIGNEE) {
+          shTry(
+            `gh issue edit ${found.number} --repo ${REPO} --add-assignee ${COMPLETED_ASSIGNEE}`,
+          );
+        }
+        if (found.state === "OPEN") {
+          sh(
+            `gh issue close ${found.number} --repo ${REPO} --comment "Already shipped in the initial foundation commit. Closing as part of the issue catalog seed."`,
+          );
+          closed++;
+          console.log(`    ↳ closed #${found.number} (assignee: ${COMPLETED_ASSIGNEE})`);
+        }
       }
       continue;
     }
@@ -2511,11 +2521,16 @@ function ensureIssues() {
       const numMatch = out.trim().match(/\/(\d+)$/);
       if (numMatch && issue.completed) {
         const n = Number(numMatch[1]);
+        if (COMPLETED_ASSIGNEE) {
+          shTry(
+            `gh issue edit ${n} --repo ${REPO} --add-assignee ${COMPLETED_ASSIGNEE}`,
+          );
+        }
         sh(
           `gh issue close ${n} --repo ${REPO} --comment "Already shipped in the initial foundation commit (Phase 1 scaffold). Closing as part of the issue catalog seed — kept for traceability."`,
         );
         closed++;
-        console.log(`    ↳ closed #${n}`);
+        console.log(`    ↳ closed #${n} (assignee: ${COMPLETED_ASSIGNEE})`);
       }
     } finally {
       try {
