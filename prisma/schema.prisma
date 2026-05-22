@@ -1,6 +1,10 @@
 // React JS Rwanda — Prisma v7 schema.
-// Generator outputs to lib/generated/prisma (NOT app/ — see master_prompt.md).
-// No url in datasource block — it lives in prisma.config.ts via env("DATABASE_URL").
+// Prisma v7 conventions used here:
+//   - generator uses `prisma-client` (NOT `prisma-client-js`)
+//   - generated client outputs to `../lib/generated/prisma` (NOT inside `app/`)
+//   - datasource block has NO url — it lives in prisma.config.ts via env("DATABASE_URL")
+//   - lib/db.ts uses the @prisma/adapter-pg driver adapter
+// See TECHSTACK.md for the full stack rationale.
 
 generator client {
   provider = "prisma-client"

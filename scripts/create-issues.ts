@@ -24,6 +24,9 @@ import { join } from "node:path";
 
 const REPO = process.env.GH_REPO ?? detectRepo();
 const APPLY = process.argv.includes("--apply");
+// Re-sync the body of every issue that already exists. Useful when issue
+// descriptions are edited in this script and need to be pushed to GitHub.
+const UPDATE_BODIES = process.argv.includes("--update-bodies");
 // Auto-assign issues marked `completed: true` to this user (the founding
 // contributor who shipped Phase 1). Override with COMPLETED_ASSIGNEE.
 const COMPLETED_ASSIGNEE = process.env.COMPLETED_ASSIGNEE ?? "MUKE-coder";
@@ -226,7 +229,7 @@ Install the canonical shadcn Form primitive (the upstream registry no longer shi
 \`\`\`bash
 pnpm dlx shadcn@latest add https://vibekit.desishub.com/r/form.json
 \`\`\`
-If the registry is unreachable, write \`components/ui/form.tsx\` manually using the source in \`jb-components.md\` → Form (shadcn fallback).
+If the registry is unreachable, write \`components/ui/form.tsx\` manually — the canonical shadcn Form source (FormProvider wrapper + useFormField hook + the six FormItem/FormLabel/FormControl/FormDescription/FormMessage/FormField primitives wired through ARIA) lives in the founding scaffold commit.
 
 ## Acceptance criteria
 
@@ -988,7 +991,7 @@ ${dep([21])}`,
 
 ## Specs
 
-- \`master_prompt.md\` — "Server-side pagination contract"
+- \`CONTRIBUTING.md\` §8 — API route + pagination patterns. Every list API route must return \`{ data, total, page, limit, totalPages }\` with server-side filtering.
 - \`screenshots/Events_1.png\`
 
 ## Acceptance criteria
@@ -1047,7 +1050,7 @@ Route handler that creates an \`EventRegistration\` for the authenticated user +
 
 ## Specs
 
-- \`master_prompt.md\` — Route Handler patterns
+- \`CONTRIBUTING.md\` §8 — Route Handler patterns: every handler starts with \`requireSession()\` or \`requireRole()\` from \`lib/auth-guard.ts\`, validates input with Zod, and uses \`getCachedOrFetch\` / \`invalidateTag\` from \`lib/cache.ts\`.
 
 ## Acceptance criteria
 
@@ -1164,7 +1167,7 @@ ${dep([21])}`,
 
 ## Specs
 
-- \`master_prompt.md\` — server-side pagination contract
+- \`CONTRIBUTING.md\` §8 — server-side pagination contract: API routes return \`{ data, total, page, limit, totalPages }\` with filters applied server-side.
 
 ## Acceptance criteria
 
@@ -1422,7 +1425,7 @@ ${dep([43])}`,
 
 ## Specs
 
-- \`master_prompt.md\` — FORM RULES (RHF + Zod, searchable select for long lists)
+- \`CONTRIBUTING.md\` §8 — Forms always use React Hook Form + \`zodResolver\`. Long selects (>5 options) use a searchable Combobox, not plain \`<select>\`. Dates use the shadcn Calendar Popover, not \`<input type="date">\`.
 
 ## Acceptance criteria
 
@@ -1650,7 +1653,7 @@ ${dep([51])}`,
 
 ## Specs
 
-- \`master_prompt.md\` — FORM RULES
+- \`CONTRIBUTING.md\` §8 — Forms use RHF + Zod. Tags input: see the JB Tags Input from the Advanced Form Elements registry, or roll a small custom input with Enter-to-add / Backspace-to-remove.
 
 ## Acceptance criteria
 
@@ -1670,7 +1673,7 @@ ${dep([52])}`,
     type: "feature",
     body: `## What to build
 
-All forum API routes follow the master_prompt route handler pattern:
+All forum API routes follow the standard pattern from CONTRIBUTING.md §8:
 
 - \`GET /api/forum/posts\` — list with filters + pagination + cache
 - \`POST /api/forum/posts\` — create thread (already in #053)
@@ -1687,7 +1690,7 @@ All GETs use \`getCachedOrFetch\` with \`tag:forum:*\` keys. All POSTs call \`in
 
 ## Specs
 
-- \`master_prompt.md\` — Route Handler patterns
+- \`CONTRIBUTING.md\` §8 — Route Handler patterns: \`requireSession()\` / \`requireRole()\` at the top, Zod input validation, \`getCachedOrFetch\` for reads, \`invalidateTag\` after mutations.
 
 ## Acceptance criteria
 
@@ -2484,6 +2487,21 @@ function ensureIssues() {
     if (found) {
       console.log(`  ✓ exists: #${found.number} ${issue.title}`);
       skipped++;
+      // If --update-bodies, re-sync the description from the source of truth.
+      if (UPDATE_BODIES && APPLY) {
+        const tmpPath = join(tmpdir(), `gh-issue-${issue.number}-update.md`);
+        writeFileSync(tmpPath, issue.body, "utf8");
+        try {
+          sh(`gh issue edit ${found.number} --repo ${REPO} --body-file "${tmpPath}"`);
+          console.log(`    ↳ body updated on #${found.number}`);
+        } finally {
+          try {
+            unlinkSync(tmpPath);
+          } catch {
+            /* ignore */
+          }
+        }
+      }
       // If marked completed: ensure assignee is set and the issue is closed.
       if (issue.completed && APPLY) {
         if (COMPLETED_ASSIGNEE) {

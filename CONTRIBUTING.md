@@ -265,8 +265,7 @@ rjsrw-community/
 ├── LICENSE                       # MIT
 ├── project-description.md
 ├── project-phases.md
-├── design-style-guide.md
-└── prompt.md
+└── design-style-guide.md
 ```
 
 ### Rules
