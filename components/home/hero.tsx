@@ -14,24 +14,24 @@ export default function Hero() {
           {/* Pill badge — bordered pill with cyan dot */}
           <div className="inline-flex items-center gap-2 w-fit border border-neutral-200 px-4 py-2">
             <span className="status-dot bg-primary-500" />
-            <span className="text-[12px] font-semibold uppercase tracking-[0.08em] text-neutral-900">
+            <span className="text-label text-neutral-900">
               Live from Kigali, Rwanda
             </span>
           </div>
 
-          {/* Headline */}
-          <h1 className="text-[32px] sm:text-[44px] lg:text-[56px] font-black leading-[1.0] tracking-[-0.03em] text-neutral-900">
+          {/* Headline — responsive: text-h1 on mobile, display-sm on tablet, display on desktop */}
+          <h1 className="text-h1 sm:text-display-sm lg:text-display text-neutral-900">
             Scaling the future{" "}
             <br className="hidden sm:block" />
             of Rwanda with{" "}
-            <span className="bg-neutral-950 text-primary-500 px-2 whitespace-nowrap inline-block">
+            <span className="bg-neutral-950 text-primary-100 px-2 whitespace-nowrap inline-block">
               React
             </span>
             .
           </h1>
 
-          {/* Supporting copy — matches Figma text exactly */}
-          <p className="text-[16px] font-normal leading-[1.6] text-neutral-500 max-w-md">
+          {/* Supporting copy */}
+          <p className="text-body-lg text-neutral-500 max-w-md">
             Join the premier community of Rwandan engineers, architects, and designers
             building the next generation of high-performance web applications in the
             heart of East Africa.
@@ -50,22 +50,16 @@ export default function Hero() {
           {/* Stats row */}
           <div className="flex gap-10 pt-4">
             <div>
-              <p className="text-[28px] font-extrabold text-neutral-900">1.2k+</p>
-              <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
-                Devs in Kigali
-              </p>
+              <p className="text-stat text-neutral-900">1.2k+</p>
+              <p className="text-label text-neutral-500">Devs in Kigali</p>
             </div>
             <div>
-              <p className="text-[28px] font-extrabold text-neutral-900">45</p>
-              <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
-                Monthly Meetups
-              </p>
+              <p className="text-stat text-neutral-900">45</p>
+              <p className="text-label text-neutral-500">Monthly Meetups</p>
             </div>
             <div>
-              <p className="text-[28px] font-extrabold text-neutral-900">12</p>
-              <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
-                Open Source Projects
-              </p>
+              <p className="text-stat text-neutral-900">12</p>
+              <p className="text-label text-neutral-500">Open Source Projects</p>
             </div>
           </div>
         </div>
@@ -90,10 +84,10 @@ export default function Hero() {
 
               {/* Component spotlight card — inside image, bottom-left */}
               <div className="absolute bottom-4 left-4 w-[240px] sm:w-[280px] bg-white p-4">
-                <p className="text-[13px] font-mono text-neutral-400 mb-2">
+                <p className="text-mono text-neutral-400 mb-2">
                   // Latest Component Spotlight
                 </p>
-                <p className="text-[16px] font-bold text-neutral-900 leading-tight">
+                <p className="text-h4 text-neutral-900 leading-tight">
                   Rwanda Digital Services UI Kit v2.0
                 </p>
               </div>
