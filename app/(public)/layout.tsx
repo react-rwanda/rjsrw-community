@@ -1,4 +1,5 @@
 import Navbar from "@/components/layout/navbar";
+import Footer from "@/components/layout/footer";
 import { getCurrentSession } from "@/lib/auth";
 import type { UserMenuSession } from "@/components/layout/user-menu";
 
@@ -28,6 +29,7 @@ export default async function PublicLayout({ children }: { children: React.React
     <>
       <Navbar session={navSession} />
       {children}
+      <Footer />
     </>
   );
 }

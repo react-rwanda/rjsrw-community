@@ -10,8 +10,6 @@ build
 dist
 
 # env
-.env
-.env.local
 .env.development.local
 .env.test.local
 .env.production.local
@@ -47,3 +45,4 @@ Thumbs.db
 
 # Prisma generated client (regenerated via postinstall / pnpm db:generate)
 lib/generated
+config.bat
