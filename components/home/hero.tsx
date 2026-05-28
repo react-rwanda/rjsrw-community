@@ -37,8 +37,8 @@ export default function Hero() {
             heart of East Africa.
           </p>
 
-          {/* Dual CTAs — using Button component */}
-          <div className="flex flex-col sm:flex-row gap-4">
+          {/* Dual CTAs — stacked vertically per Figma */}
+          <div className="flex flex-col gap-3 w-fit">
             <Button variant="primary" size="default" asChild>
               <Link href="/register">Join the Community</Link>
             </Button>
@@ -72,27 +72,32 @@ export default function Hero() {
 
         {/* ─── Right column ─── */}
         <div className="relative">
-          {/* Bordered photograph frame with cyan accent top-right */}
-          <div className="relative border border-neutral-200 overflow-hidden">
-            {/* Cyan accent block — top right corner */}
-            <div className="absolute top-0 right-0 w-16 h-16 bg-primary-500 z-10" />
-            <img
-              src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&q=80&auto=format&fit=crop"
-              alt="Developers collaborating at a meetup in Kigali"
-              className="w-full h-auto object-cover grayscale"
-            />
-          </div>
+          {/* Cyan accent block — top right corner, behind the frame */}
+          <div className="absolute -top-5 -right-5 w-28 h-28 bg-primary-100 z-0" />
 
-          {/* Component spotlight overlay card */}
-          <div className="absolute bottom-6 left-6 right-6 sm:left-auto sm:right-6 sm:w-[280px] border border-neutral-200 bg-white p-4">
-            <p className="text-[13px] font-mono text-neutral-400 mb-1">
-              // Latest Component Spotlight
-            </p>
-            <p className="text-[16px] font-bold text-neutral-900 leading-tight">
-              Rwanda Digital Services UI Kit v2.0
-            </p>
-            {/* Cyan accent bar at bottom of card */}
-            <div className="mt-3 h-2 w-12 bg-primary-500" />
+          {/* Cyan accent block — bottom left corner, behind the frame */}
+          <div className="absolute -bottom-5 -left-5 w-28 h-28 bg-primary-100 z-0" />
+
+          {/* Photo frame — thick white padding with thin gray border */}
+          <div className="relative z-10 border border-neutral-200 bg-white p-3 sm:p-4">
+            {/* Image */}
+            <div className="relative">
+              <img
+                src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&q=80&auto=format&fit=crop"
+                alt="Developers collaborating at a meetup in Kigali"
+                className="w-full h-auto object-cover grayscale"
+              />
+
+              {/* Component spotlight card — inside image, bottom-left */}
+              <div className="absolute bottom-4 left-4 w-[240px] sm:w-[280px] bg-white p-4">
+                <p className="text-[13px] font-mono text-neutral-400 mb-2">
+                  // Latest Component Spotlight
+                </p>
+                <p className="text-[16px] font-bold text-neutral-900 leading-tight">
+                  Rwanda Digital Services UI Kit v2.0
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
