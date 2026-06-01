@@ -69,7 +69,6 @@ export function FilterSidebar() {
 
   return (
     <div className="flex flex-col gap-8 w-full max-w-xs">
-      {/* Stack Filter */}
       <div>
         <h3 className="mb-4 text-[13px] font-bold uppercase tracking-[0.06em] text-neutral-500">
           Filter by Stack
@@ -95,7 +94,6 @@ export function FilterSidebar() {
         </div>
       </div>
 
-      {/* Availability Filter */}
       <div>
         <h3 className="mb-4 text-[13px] font-bold uppercase tracking-[0.06em] text-neutral-500">
           Availability
