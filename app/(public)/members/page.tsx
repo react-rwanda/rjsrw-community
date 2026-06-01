@@ -2,26 +2,17 @@ import { db } from "@/lib/db";
 import { getCachedOrFetch } from "@/lib/cache";
 
 export default async function MembersPage() {
-  let active = 0;
-  let verified = 0;
-
-  try {
-    const counts = await getCachedOrFetch(
-      "member-counts",
-      async () => {
-        const [activeCount, verifiedCount] = await Promise.all([
-          db.user.count(),
-          db.user.count({ where: { emailVerified: true } }),
-        ]);
-        return { active: activeCount, verified: verifiedCount };
-      },
-      3600,
-    );
-    active = counts.active;
-    verified = counts.verified;
-  } catch {
-    // DB not reachable counts defaulted to 0
-  }
+  const { active, verified } = await getCachedOrFetch(
+    "member-counts",
+    async () => {
+      const [activeCount, verifiedCount] = await Promise.all([
+        db.user.count(),
+        db.user.count({ where: { emailVerified: true } }),
+      ]);
+      return { active: activeCount, verified: verifiedCount };
+    },
+    3600,
+  );
 
   return (
     <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-12 w-full">
@@ -41,7 +32,7 @@ export default async function MembersPage() {
             ACTIVE: {active.toLocaleString()}
           </div>
           <div className="inline-flex items-center justify-center border border-amber-200 bg-amber-50/50 px-3 py-1.5 text-[12px] font-bold uppercase tracking-widest text-amber-700">
-            VERIFIED
+            VERIFIED: {verified.toLocaleString()}
           </div>
         </div>
       </div>
