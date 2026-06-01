@@ -2,18 +2,7 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 
-const CODE_DECORATION = `export default function Community() {
-  return (
-    <Layout>
-      <KigaliHub>
-        <Developers
-          count={1200}
-          vibe="High Energy"
-        />
-      </KigaliHub>
-    </Layout>
-  )
-}`;
+import { CODE_DECORATION } from "./data";
 
 export default function CtaSection() {
   return (
@@ -47,7 +36,7 @@ export default function CtaSection() {
         </div>
 
         <div className="pointer-events-none relative hidden lg:block">
-          <pre className="select-none whitespace-pre-wrap font-mono text-sm leading-relaxed text-primary-500 opacity-5">
+          <pre className="select-none whitespace-pre-wrap font-mono text-sm leading-relaxed text-primary-500 opacity-10">
             {CODE_DECORATION}
           </pre>
         </div>
