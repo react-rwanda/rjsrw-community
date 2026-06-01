@@ -19,7 +19,7 @@ const buttonVariants = cva(
           "bg-transparent border border-neutral-900 text-neutral-900 text-[13px] font-semibold uppercase tracking-[0.06em] hover:bg-neutral-50",
         // Accent — cyan filled (Discord / Subscribe)
         accent:
-          "bg-primary-600 text-neutral-900 text-[13px] font-bold uppercase tracking-[0.06em] hover:bg-primary-700",
+          "bg-primary-500 text-neutral-900 text-[13px] font-bold uppercase tracking-[0.06em] hover:bg-primary-600",
         // Outline — light outlined button used inside content cards (e.g. SLIDES, VIDEO)
         outline:
           "bg-transparent border border-neutral-200 text-neutral-900 text-[13px] font-semibold uppercase tracking-[0.06em] hover:bg-neutral-50 hover:border-neutral-300",
