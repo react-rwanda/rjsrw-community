@@ -2,36 +2,46 @@ import { db } from "@/lib/db";
 import { getCachedOrFetch } from "@/lib/cache";
 
 export default async function MembersPage() {
-  const { active, verified } = await getCachedOrFetch(
-    "member-counts",
-    async () => {
-      const [active, verified] = await Promise.all([
-        db.user.count(),
-        db.user.count({ where: { emailVerified: true } }),
-      ]);
-      return { active, verified };
-    },
-    3600,
-  );
+  let active = 0;
+  let verified = 0;
+
+  try {
+    const counts = await getCachedOrFetch(
+      "member-counts",
+      async () => {
+        const [activeCount, verifiedCount] = await Promise.all([
+          db.user.count(),
+          db.user.count({ where: { emailVerified: true } }),
+        ]);
+        return { active: activeCount, verified: verifiedCount };
+      },
+      3600,
+    );
+    active = counts.active;
+    verified = counts.verified;
+  } catch {
+    // DB not reachable counts defaulted to 0
+  }
 
   return (
-    <div className="container py-10">
-      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Member Directory</h1>
-          <p className="text-muted-foreground mt-2 max-w-xl">
-            Browse and connect with other members of the ReactJS Rwanda community.
+    <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-12 w-full">
+      <div className="flex flex-col gap-6 border-b border-neutral-200 pb-8 md:flex-row md:items-end md:justify-between">
+        <div className="max-w-2xl">
+          <h1 className="text-4xl sm:text-[40px] font-extrabold tracking-tight text-neutral-900">
+            Member Directory
+          </h1>
+          <p className="mt-4 text-lg leading-relaxed text-neutral-500">
+            Connecting the brightest React, React Native, and Web engineers across
+            Rwanda. Discover collaborators, mentors, and local experts.
           </p>
         </div>
 
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <div className="inline-flex items-center justify-between rounded-full border border-neutral-200 bg-white px-4 py-1.5 text-sm font-medium shadow-sm dark:border-neutral-800 dark:bg-neutral-950 sm:justify-center">
-            <span className="text-neutral-500 dark:text-neutral-400 mr-2">ACTIVE</span>
-            <span className="font-bold">{active}</span>
+        <div className="flex flex-row items-center gap-3 pt-4 md:pt-0">
+          <div className="inline-flex items-center justify-center border border-sky-200 bg-sky-50 px-3 py-1.5 text-[12px] font-bold uppercase tracking-widest text-sky-500">
+            ACTIVE: {active.toLocaleString()}
           </div>
-          <div className="inline-flex items-center justify-between rounded-full border border-neutral-200 bg-white px-4 py-1.5 text-sm font-medium shadow-sm dark:border-neutral-800 dark:bg-neutral-950 sm:justify-center">
-            <span className="text-neutral-500 dark:text-neutral-400 mr-2">VERIFIED</span>
-            <span className="font-bold">{verified}</span>
+          <div className="inline-flex items-center justify-center border border-amber-200 bg-amber-50/50 px-3 py-1.5 text-[12px] font-bold uppercase tracking-widest text-amber-700">
+            VERIFIED
           </div>
         </div>
       </div>
