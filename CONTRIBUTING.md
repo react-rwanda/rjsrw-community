@@ -26,6 +26,7 @@
 This project follows the [Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/). By participating you agree to uphold it.
 
 Key expectations:
+
 - Respectful, constructive feedback only in PRs and issues
 - No gatekeeping — all skill levels are welcome
 - Credit others when building on their work
@@ -269,6 +270,7 @@ rjsrw-community/
 ```
 
 ### Rules
+
 - **Never create folders outside this layout** without opening a Discussion issue first.
 - `components/ui/` is managed by shadcn/ui. Do not edit files here manually.
 - Each component file exports a single default export named after the file (`member-card.tsx` → `export default function MemberCard`).
@@ -290,20 +292,20 @@ Every task in `project-phases.md` is a GitHub Issue. Issues are the only unit of
 
 ### Issue Labels
 
-| Label | Meaning |
-|-------|---------|
-| `status: open` | Available to pick up |
-| `status: in-progress` | Someone is working on it |
-| `status: review` | PR submitted, awaiting review |
-| `status: blocked` | Waiting on another issue |
-| `phase: 1` through `phase: 6` | Which phase it belongs to |
-| `difficulty: starter` | Good first issue (< 2h of work) |
-| `difficulty: medium` | 2–8h of work |
-| `difficulty: hard` | 8h+ or requires deep domain knowledge |
-| `type: feature` | New feature |
-| `type: bug` | Bug fix |
-| `type: design` | UI/styling work |
-| `type: docs` | Documentation |
+| Label                         | Meaning                               |
+| ----------------------------- | ------------------------------------- |
+| `status: open`                | Available to pick up                  |
+| `status: in-progress`         | Someone is working on it              |
+| `status: review`              | PR submitted, awaiting review         |
+| `status: blocked`             | Waiting on another issue              |
+| `phase: 1` through `phase: 6` | Which phase it belongs to             |
+| `difficulty: starter`         | Good first issue (< 2h of work)       |
+| `difficulty: medium`          | 2–8h of work                          |
+| `difficulty: hard`            | 8h+ or requires deep domain knowledge |
+| `type: feature`               | New feature                           |
+| `type: bug`                   | Bug fix                               |
+| `type: design`                | UI/styling work                       |
+| `type: docs`                  | Documentation                         |
 
 ### Issue Dependency Rule
 
@@ -351,15 +353,15 @@ We use **[Conventional Commits](https://www.conventionalcommits.org/)**.
 
 ### Types
 
-| Type | When to use |
-|------|------------|
-| `feat` | New feature or component |
-| `fix` | Bug fix |
-| `design` | Style/UI changes with no logic change |
+| Type       | When to use                                |
+| ---------- | ------------------------------------------ |
+| `feat`     | New feature or component                   |
+| `fix`      | Bug fix                                    |
+| `design`   | Style/UI changes with no logic change      |
 | `refactor` | Code restructuring with no behavior change |
-| `docs` | Documentation only |
-| `test` | Adding or fixing tests |
-| `chore` | Build, config, dependencies |
+| `docs`     | Documentation only                         |
+| `test`     | Adding or fixing tests                     |
+| `chore`    | Build, config, dependencies                |
 
 ### Examples
 
@@ -390,6 +392,7 @@ Closes #050
 ```
 
 ### Rules
+
 - Lowercase subject line, no period at the end
 - Subject line max 72 characters
 - Always include `Closes #<issue-number>` in the footer
@@ -428,15 +431,19 @@ When you open a PR, fill in the template:
 
 ```markdown
 ## What this PR does
+
 [2-3 sentences describing what you built or fixed]
 
 ## Issue
+
 Closes #[issue-number]
 
 ## Screenshots
+
 [Paste screenshots of your UI — required for all visual changes]
 
 ## Design checklist
+
 - [ ] Matches design-style-guide.md
 - [ ] 0px border radius on cards/buttons/inputs
 - [ ] Correct color tokens used
@@ -444,6 +451,7 @@ Closes #[issue-number]
 - [ ] No .dark: classes
 
 ## Technical checklist
+
 - [ ] TypeScript types defined
 - [ ] API routes cached via Redis (if applicable)
 - [ ] pnpm build passes
@@ -458,6 +466,7 @@ Closes #[issue-number]
 - Once approved, a maintainer will merge using **Squash and Merge**
 
 ### Merge Rules
+
 - Only maintainers merge PRs
 - `main` branch is protected — no direct pushes
 - PRs that fail CI (build/lint) will not be reviewed until passing
@@ -479,10 +488,20 @@ interface MemberCardProps {
   username: string;
   title: string;
   stack: string[];
-  availability: "OPEN_TO_WORK" | "OPEN_TO_PROJECT" | "MENTORING" | "NOT_LOOKING";
+  availability:
+    | "OPEN_TO_WORK"
+    | "OPEN_TO_PROJECT"
+    | "MENTORING"
+    | "NOT_LOOKING";
 }
 
-export default function MemberCard({ name, username, title, stack, availability }: MemberCardProps) {
+export default function MemberCard({
+  name,
+  username,
+  title,
+  stack,
+  availability,
+}: MemberCardProps) {
   // ...
 }
 ```
@@ -501,13 +520,13 @@ export default function MemberCard({ name, username, title, stack, availability 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const page = parseInt(searchParams.get("page") ?? "1");
-  
+
   const data = await getCachedOrFetch(
     `events:list:page:${page}`,
     () => db.event.findMany({ skip: (page - 1) * 10, take: 10 }),
-    60 * 5 // 5 minute TTL
+    60 * 5, // 5 minute TTL
   );
-  
+
   return Response.json(data);
 }
 
@@ -554,21 +573,27 @@ const form = useForm<FormValues>({ resolver: zodResolver(schema) });
 This is the most commonly violated rule in PRs. Read `design-style-guide.md` fully. The hard rules are:
 
 ### The Sharp Rule
+
 **Zero border radius on all UI elements except avatars (pill) and code snippets (4px).** If your component has `rounded`, `rounded-md`, `rounded-lg`, or any `rounded-*` class on anything except an avatar or code block, your PR will be requested-changes immediately.
 
 ### The Flat Rule
+
 **No box shadows on cards or buttons.** Use `1px solid #E5E5E5` borders. The only exceptions are modals (`shadow-md`) and dropdowns (`shadow-xs`).
 
 ### The Color Rule
+
 **Only use tokens defined in `design-style-guide.md` §3.** No hardcoded hex colors in JSX. If you need a color not in the system, open a Discussion issue.
 
 ### The Dark Mode Rule
+
 **No `.dark:` Tailwind classes. Ever.** Dark mode is explicitly out of scope.
 
 ### The Typography Rule
+
 **Section labels are ALL CAPS with `tracking-widest` or `letter-spacing: 0.08em`.** Page titles use `font-weight: 800`. Nav items use `font-weight: 500` ALL CAPS.
 
 ### Screenshot Required
+
 All PRs with UI changes require at least one screenshot. PRs without screenshots for visual changes will not be reviewed.
 
 ---
@@ -576,6 +601,7 @@ All PRs with UI changes require at least one screenshot. PRs without screenshots
 ## 10. Testing Requirements
 
 For v1, we require:
+
 - `pnpm build` must pass (TypeScript + Next.js compilation)
 - `pnpm lint` must pass (ESLint)
 - Manual test of your feature in browser before opening PR
@@ -589,6 +615,7 @@ Unit/integration tests are encouraged but not yet required for v1. A testing inf
 Maintainers use this checklist when reviewing PRs:
 
 **Code Quality**
+
 - [ ] TypeScript strict — no `any`, all props typed
 - [ ] Server Components used where possible
 - [ ] React Query used for client data (no useEffect for data)
@@ -598,6 +625,7 @@ Maintainers use this checklist when reviewing PRs:
 - [ ] No console.log statements
 
 **Design Quality**
+
 - [ ] Matches design-style-guide.md
 - [ ] 0px radius on cards/buttons/inputs
 - [ ] Correct color tokens (no hardcoded hex)
@@ -607,6 +635,7 @@ Maintainers use this checklist when reviewing PRs:
 - [ ] Screenshot provided
 
 **Architecture**
+
 - [ ] File placed in correct directory (§3)
 - [ ] Branch named correctly (§5)
 - [ ] Commit messages follow convention (§6)
@@ -617,7 +646,7 @@ Maintainers use this checklist when reviewing PRs:
 
 ## 12. Getting Help
 
-- **Discord:** Join `#rjsrw-platform-dev` channel for questions
+- **Discord:** Join our server at https://discord.gg/6PjR3pEgPK — use `#general-react` for questions
 - **GitHub Discussions:** For design decisions, architecture questions, or proposing new features
 - **GitHub Issues:** For bugs and tracked work items only
 - **Weekly Dev Call:** Every Saturday 10am EAT — open to all contributors (link in Discord)
@@ -626,4 +655,4 @@ If you're stuck on an issue for more than 2 hours, post in Discord with your bra
 
 ---
 
-*Built by the React JS Rwanda community. Every line of code is a contribution to Rwanda's digital renaissance.*
+_Built by the React JS Rwanda community. Every line of code is a contribution to Rwanda's digital renaissance._
