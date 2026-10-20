@@ -1,0 +1,33 @@
+{
+  "default_branch": "main",
+  "branches": [
+    "cynthia/feat/issue-37",
+    "docs/update-community-links",
+    "feat/027-events-hub-header-filter-tag-pills",
+    "feat/041-article-card",
+    "feat/047-contribution-leaderboard-widget",
+    "feat/049-community-stats-widget",
+    "main",
+    "revert-90-feat/hero-section"
+  ],
+  "parent": {
+    "cynthia/feat/issue-37": "main",
+    "docs/update-community-links": "main",
+    "feat/027-events-hub-header-filter-tag-pills": "main",
+    "feat/041-article-card": "main",
+    "feat/047-contribution-leaderboard-widget": "main",
+    "feat/049-community-stats-widget": "main",
+    "main": null,
+    "revert-90-feat/hero-section": "main"
+  },
+  "order": [
+    "main",
+    "cynthia/feat/issue-37",
+    "docs/update-community-links",
+    "feat/027-events-hub-header-filter-tag-pills",
+    "feat/041-article-card",
+    "feat/047-contribution-leaderboard-widget",
+    "feat/049-community-stats-widget",
+    "revert-90-feat/hero-section"
+  ]
+}
