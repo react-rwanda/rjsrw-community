@@ -2,16 +2,16 @@
   "name": "rjsrw-community",
   "version": "0.1.0",
   "private": true,
-  "description": "React JS Rwanda Community Platform — the open-source community hub for Rwandan React developers.",
+  "description": "React JS Rwanda Community Platform \u2014 the open-source community hub for Rwandan React developers.",
   "license": "MIT",
   "engines": {
     "node": ">=20",
     "pnpm": ">=9"
   },
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "node api.js && next dev",
+    "build": "node api.js && next build",
+    "start": "node api.js && next start",
     "lint": "eslint . --max-warnings 0",
     "postinstall": "prisma generate",
     "prepare": "husky",
