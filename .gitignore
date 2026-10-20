@@ -10,8 +10,6 @@ build
 dist
 
 # env
-.env
-.env.local
 .env.development.local
 .env.test.local
 .env.production.local
@@ -34,10 +32,8 @@ Thumbs.db
 
 # IDE
 .idea
-.vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
-.vscode
 
 # Vercel
 .vercel
@@ -47,6 +43,4 @@ Thumbs.db
 
 # Prisma generated client (regenerated via postinstall / pnpm db:generate)
 lib/generated
-branch_structure.json
-temp_auto_push.bat
-temp_interactive_push.bat
+config.bat
